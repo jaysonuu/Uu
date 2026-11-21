@@ -1,0 +1,19 @@
+<!DOCTYPE html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Icon maker</title>
+<style>body{font:16px system-ui,sans-serif;max-width:480px;margin:auto;padding:16px}label{display:block;margin:10px 0}input{font:inherit}canvas{width:200px;height:200px;border-radius:22%;border:1px solid #ccc}button{font:inherit;padding:10px 14px}</style>
+<h2>Make your app icon</h2>
+<label>Your logo image (optional)<br><input type="file" id="f" accept="image/*"></label>
+<label>Or text, 1 to 3 letters<br><input id="t" value="UU" maxlength="3"></label>
+<label>Background <input type="color" id="bg" value="#c8281e"> Text <input type="color" id="fg" value="#ffd23f"></label>
+<canvas id="c" width="512" height="512"></canvas><br><br><button onclick="dl()">Download the 4 icon files</button>
+<p>Put the downloaded PNG files in the app folder and replace the old ones with the same names. Then upload the folder again to your host.</p>
+<script>
+let img=null;const $=i=>document.getElementById(i);
+function draw(cv,pad){const s=cv.width,x=cv.getContext('2d');x.fillStyle=$('bg').value;x.fillRect(0,0,s,s);const m=s*(pad?0.18:0.1);
+if(img){const r=Math.min((s-2*m)/img.width,(s-2*m)/img.height),w=img.width*r,h=img.height*r;x.drawImage(img,(s-w)/2,(s-h)/2,w,h)}
+else{x.fillStyle=$('fg').value;x.font='bold '+(s*(pad?0.3:0.38))+'px system-ui,sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText($('t').value,s/2,s*0.52)}}
+function pv(){draw($('c'),0)}
+['t','bg','fg'].forEach(i=>$(i).oninput=pv);
+$('f').onchange=e=>{const f=e.target.files[0];if(!f)return;const i=new Image();i.onload=()=>{img=i;pv()};i.src=URL.createObjectURL(f)};
+function dl(){[['icon-512.png',512,0],['icon-192.png',192,0],['icon-180.png',180,0],['icon-512-maskable.png',512,1]].forEach(([n,s,p],k)=>setTimeout(()=>{const c=document.createElement('canvas');c.width=c.height=s;draw(c,p);c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click()})},k*500))}
+pv();
+</script>
